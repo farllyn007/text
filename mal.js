@@ -1,32 +1,28 @@
-const movel = document.getElementById('movel');
 
-movel.onmousedown = function(event) {
-    let shiftX = event.clientX - movel.getBoundingClientRect().left;
-    let shiftY = event.clientY - movel.getBoundingClientRect().top;
+document.addEventListener('DOMContentLoaded', () => {
+    const draggable = document.getElementById('draggable');
+    
+    draggable.addEventListener('mousedown', (event) => {
+        // Salva as posições iniciais
+        const startX = event.clientX;
+        const startY = event.clientY;
+        const rect = draggable.getBoundingClientRect();
+        const offsetX = startX - rect.left;
+        const offsetY = startY - rect.top;
 
-    function moveAt(pageX, pageY) {
-        movel.style.left = pageX - shiftX + 'px';
-        movel.style.top = pageY - shiftY + 'px';
-    }
+        const mouseMoveHandler = (event) => {
+            const x = event.clientX - offsetX;
+            const y = event.clientY - offsetY;
+            draggable.style.left = `${x}px`;
+            draggable.style.top = `${y}px`;
+        };
 
-    // Move the object on mouse move
-    function onMouseMove(event) {
-        moveAt(event.pageX, event.pageY);
-    }
+        const mouseUpHandler = () => {
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            document.removeEventListener('mouseup', mouseUpHandler);
+        };
 
-    document.addEventListener('mousemove', onMouseMove);
-
-    // Drop the object, remove event listeners
-    movel.onmouseup = function() {
-        document.removeEventListener('mousemove', onMouseMove);
-        movel.onmouseup = null;
-        movel.style.cursor = 'grab';
-    };
-
-    movel.style.cursor = 'grabbing';
-};
-
-// Prevent default drag behavior
-movel.ondragstart = function() {
-    return false;
-};
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+    });
+});
